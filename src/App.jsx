@@ -34,14 +34,17 @@ const App = () => {
     setSearchTerm(event.target.value);
   }
 
-  const [searchAuthor, setSearchAuthor] = useState('');
+  const filteredSearch = exampleBookList.filter((book) => 
+    book.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <>
       <div>
         <h1>{welcome.greeting} {welcome.title}</h1>
         <Search onSearch={handleSearch}/>
-        <List bookList={searchedStory}/>
+        <hr />
+        <List bookList={filteredSearch}/>
       </div>
     </>
   )
