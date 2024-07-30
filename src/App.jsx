@@ -28,29 +28,37 @@ const App = () => {
     },
   ];
 
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  }
+
+  const [searchAuthor, setSearchAuthor] = useState('');
+
   return (
     <>
       <div>
         <h1>{welcome.greeting} {welcome.title}</h1>
-        <Search />
-        <List bookList={exampleBookList}/>
+        <Search onSearch={handleSearch}/>
+        <List bookList={searchedStory}/>
       </div>
     </>
   )
 }
 
 const List = (prop) => (
-  <ui>
+  <ul>
     {
       prop.bookList.map((item) => (
         <Item key={item.objectID} item={item} />
       ))
     }
-  </ui>
+  </ul>
 )
 
 const Item = (prop) => (
-  <li key={prop.key}>
+  <li key={prop.item.objectID}>
     <span>
       <a href={prop.item.url}>{prop.item.title}</a>
     </span>
@@ -60,22 +68,13 @@ const Item = (prop) => (
   </li>
 )
 
-const Search = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleChange = (event) => {
-    setSearchTerm(event.target.value);
-  }
+const Search = (props) => {
 
   return (
     <div>
-    <label htmlFor="search">Search: </label>
-    <input type="text" id='search' onChange={handleChange}/>
-
-    <p>
-      this is search term: <strong>{searchTerm}</strong>
-    </p>
-  </div>
+      <label htmlFor="search">Search: </label>
+      <input type="text" id='search' onChange={props.onSearch} />
+    </div>
   )
 }
 
