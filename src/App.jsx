@@ -75,11 +75,12 @@ const App = () => {
 
       <InputWithLabel
         id="search"
-        label="search"
         value={searchTerm}
         onInputChange={handleSearch}
         type='text' // 사실 없어도 상관은 없지 
-      ></InputWithLabel>
+      >
+        <strong>search: </strong>
+      </InputWithLabel>
       
       <RadioInput />
 
@@ -90,11 +91,11 @@ const App = () => {
   )
 }
 
-const InputWithLabel = ({id, label, value, onInputChange, type='text'}) => {
+const InputWithLabel = ({id, value, onInputChange, type='text', children}) => {
   return (
     <>
       <div>
-        <label htmlFor={id}>{label}</label>
+        <label htmlFor={id}>{children}</label>
         &nbsp;
         <input 
           id={id}
