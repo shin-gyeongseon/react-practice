@@ -3,6 +3,19 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
+const useStorageState = (initialState, key) => {
+  const [value, setValue] = useState(
+    localStorage.getItem(key) || initialState
+  );
+
+  React.useEffect(() => {
+    console.log('entered useStorageState ::: ' + value);
+    localStorage.setItem(key, value);
+  }, [value]);
+
+  return [value, setValue];
+}
+
 const App = () => {
   const welcome = {
     greeting: "Hey",
@@ -28,23 +41,66 @@ const App = () => {
     },
   ];
 
-  const [searchTerm, setSearchTerm] = useState('');
-
+  const [searchTerm, setSearchTerm] = useStorageState('React', 'search'); // 나는 책이랑 파라미터 순서 다름
+  
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   }
-
+  
   const filteredSearch = exampleBookList.filter((book) => 
     book.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const [checked, setChecked] = React.useState(false);
+
+  const handleChangeCheckbox = (event) => {
+    console.log('toggle checkbox ::: ', event.target.value);
+    setChecked(!checked);
+  }
+
+  // InputWithLabel을 wrapping 못할까 ? 된다면 가독성이 높도록 만들 수 있을거 같은데 ? 
+  const RadioInput = (props) => {
+    return <InputWithLabel 
+            id="checkbox"
+            label="checkbox"
+            value={checked}
+            onInputChange={handleChangeCheckbox}
+            type='checkbox'
+          ></InputWithLabel>
+  }
+
+  return (
+    <>
+      <h1>{welcome.greeting} {welcome.title}</h1>
+
+      <InputWithLabel
+        id="search"
+        label="search"
+        value={searchTerm}
+        onInputChange={handleSearch}
+        type='text' // 사실 없어도 상관은 없지 
+      ></InputWithLabel>
+      
+      <RadioInput />
+
+      <hr />
+
+      <List bookList={filteredSearch}/>
+    </>
+  )
+}
+
+const InputWithLabel = ({id, label, value, onInputChange, type='text'}) => {
   return (
     <>
       <div>
-        <h1>{welcome.greeting} {welcome.title}</h1>
-        <Search search={searchTerm} onSearch={handleSearch} />
-        <hr />
-        <List bookList={filteredSearch}/>
+        <label htmlFor={id}>{label}</label>
+        &nbsp;
+        <input 
+          id={id}
+          type={type}
+          value={value}
+          onChange={onInputChange}></input>
       </div>
     </>
   )
