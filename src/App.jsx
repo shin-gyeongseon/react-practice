@@ -51,23 +51,7 @@ const App = () => {
     book.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const [checked, setChecked] = React.useState(false);
 
-  const handleChangeCheckbox = (event) => {
-    console.log('toggle checkbox ::: ', event.target.value);
-    setChecked(!checked);
-  }
-
-  // InputWithLabel을 wrapping 못할까 ? 된다면 가독성이 높도록 만들 수 있을거 같은데 ? 
-  const RadioInput = (props) => {
-    return <InputWithLabel 
-            id="checkbox"
-            label="checkbox"
-            value={checked}
-            onInputChange={handleChangeCheckbox}
-            type='checkbox'
-          ></InputWithLabel>
-  }
 
   return (
     <>
@@ -78,12 +62,11 @@ const App = () => {
         value={searchTerm}
         onInputChange={handleSearch}
         type='text' // 사실 없어도 상관은 없지 
+        isFocused
       >
         <strong>search: </strong>
       </InputWithLabel>
       
-      <RadioInput />
-
       <hr />
 
       <List bookList={filteredSearch}/>
@@ -91,17 +74,28 @@ const App = () => {
   )
 }
 
-const InputWithLabel = ({id, value, onInputChange, type='text', children}) => {
+const InputWithLabel = ({id, value, onInputChange, type='text', children, isFocused}) => {
+  const inputRef = React.useRef();
+
+  React.useEffect(() => {
+    if (isFocused && inputRef.current){
+      inputRef.current.focus();
+    }
+  })
   return (
     <>
       <div>
         <label htmlFor={id}>{children}</label>
         &nbsp;
         <input 
+          ref={inputRef}
           id={id}
           type={type}
           value={value}
-          onChange={onInputChange}></input>
+          autoFocus={isFocused}
+          onChange={onInputChange}
+          >
+        </input>
       </div>
     </>
   )
