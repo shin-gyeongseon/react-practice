@@ -20,11 +20,12 @@ const initialStories = [
 ];
 
 const getAsyncStories = () =>
-  new Promise((resolve) =>
+  new Promise((resolve) =>{
     setTimeout(
       () => resolve({ data: { stories: initialStories } }),
       2000
-    )
+    );
+  }
   );
 
 const storiesReducer = (state, action) => {
@@ -86,16 +87,18 @@ const App = () => {
   React.useEffect(() => {
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-    getAsyncStories()
-      .then((result) => {
+    const hackerApiUrl = `http://hn.algolia.com/api/v1/search?query=`;
+    fetch(`${hackerApiUrl}react`)
+      .then(response => response.json())
+      .then(result => {
         dispatchStories({
-          type: 'STORIES_FETCH_SUCCESS',
-          payload: result.data.stories,
-        });
+          type: "STORIES_FETCH_SUCCESS",
+          payload: result.hits
+        })
       })
-      .catch(() =>
-        dispatchStories({ type: 'STORIES_FETCH_FAILURE' })
-      );
+      .catch(() => {
+        dispatchStories({type: "STORIES_FETCH_FAILURE"})
+      });
   }, []);
 
   const handleRemoveStory = (item) => {
