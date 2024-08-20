@@ -46,10 +46,14 @@ const useStorageState = (key, initialState) => {
 };
 
 const App = () => {
+  const HACKER_API_URL = `http://hn.algolia.com/api/v1/search?query=`;
+
   const [searchTerm, setSearchTerm] = useStorageState(
     'search',
     'React'
   );
+
+  const [fetchUrl, setFetchUrl] = React.useState(`${HACKER_API_URL}${searchTerm}`);
 
   const [stories, dispatchStories] = React.useReducer(
     storiesReducer,
@@ -58,11 +62,10 @@ const App = () => {
 
   const fetchHackNews = React.useCallback(() => {
     if (!searchTerm) return;
-    const hackerApiUrl = `http://hn.algolia.com/api/v1/search?query=`;
 
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-    fetch(`${hackerApiUrl}${searchTerm}`)
+    fetch(fetchUrl)
       .then(response => response.json())
       .then(result => {
         dispatchStories({
@@ -73,11 +76,11 @@ const App = () => {
       .catch(() => {
         dispatchStories({type: "STORIES_FETCH_FAILURE"})
       });
-  }, [searchTerm]);
+  }, [fetchUrl]);
 
   React.useEffect(() => {
-    fetchHackNews(searchTerm)
-  }, [searchTerm])
+    fetchHackNews();
+  }, [fetchUrl])
 
   const handleRemoveStory = (item) => {
     dispatchStories({
@@ -87,20 +90,31 @@ const App = () => {
   };
 
   const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
+    setSearchTerm(event.target.value); 
   };
+
+  const handleFetchUrl = () => {
+    setFetchUrl(`${HACKER_API_URL}${searchTerm}`);
+  }
 
   return (
     <div>
       <h1>My Hacker Stories</h1>
 
       <InputWithLabel
-        id="search"
+        id="searchInput"
         value={searchTerm}
-        isFocused
         onInputChange={handleSearch}
+        isFocused
       >
         <strong>Search:</strong>
+      </InputWithLabel>
+      <InputWithLabel
+        id="search"
+        type='button'
+        value='검색'
+        handleClick={handleFetchUrl}
+      >
       </InputWithLabel>
 
       <hr />
@@ -124,6 +138,7 @@ const InputWithLabel = ({
   value,
   type = 'text',
   onInputChange,
+  handleClick,
   isFocused,
   children,
 }) => {
@@ -145,6 +160,7 @@ const InputWithLabel = ({
         type={type}
         value={value}
         onChange={onInputChange}
+        onClick={handleClick}
       />
     </>
   );
