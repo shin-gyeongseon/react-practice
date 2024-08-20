@@ -1,4 +1,5 @@
 import * as React from 'react';
+import axios from 'axios';
 
 const storiesReducer = (state, action) => {
   switch (action.type) {
@@ -60,22 +61,21 @@ const App = () => {
     { data: [], isLoading: false, isError: false }
   );
 
-  const fetchHackNews = React.useCallback(() => {
+  const fetchHackNews = React.useCallback(async () => {
     if (!searchTerm) return;
 
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-    fetch(fetchUrl)
-      .then(response => response.json())
-      .then(result => {
-        dispatchStories({
-          type: "STORIES_FETCH_SUCCESS",
-          payload: result.hits
-        })
-      })
-      .catch(() => {
-        dispatchStories({type: "STORIES_FETCH_FAILURE"})
+    try {
+      const result = await axios.get(fetchUrl);
+      dispatchStories({
+        type: "STORIES_FETCH_SUCCESS",
+        payload: result.data.hits
       });
+    } catch (error) {
+      console.error(error);
+      dispatchStories({type: "STORIES_FETCH_FAILURE"})
+    }
   }, [fetchUrl]);
 
   React.useEffect(() => {
@@ -93,30 +93,20 @@ const App = () => {
     setSearchTerm(event.target.value); 
   };
 
-  const handleFetchUrl = () => {
+  const handleSearchSubmit = (event) => {
     setFetchUrl(`${HACKER_API_URL}${searchTerm}`);
+    event.preventDefault();
   }
 
   return (
     <div>
       <h1>My Hacker Stories</h1>
-
-      <InputWithLabel
-        id="searchInput"
-        value={searchTerm}
-        onInputChange={handleSearch}
-        isFocused
+      <SearchForm
+        searchTerm={searchTerm}
+        onSearchInput={handleSearch}
+        onSearchSubmit={handleSearchSubmit}
       >
-        <strong>Search:</strong>
-      </InputWithLabel>
-      <InputWithLabel
-        id="search"
-        type='button'
-        value='검색'
-        handleClick={handleFetchUrl}
-      >
-      </InputWithLabel>
-
+      </SearchForm>
       <hr />
 
       {stories.isError && <p>Something went wrong ...</p>}
@@ -133,12 +123,37 @@ const App = () => {
   );
 };
 
+const SearchForm = ({
+  searchTerm,
+  onSearchInput,
+  onSearchSubmit,
+}) => {
+  return (
+    <form onSubmit={onSearchSubmit}>
+        <InputWithLabel
+          id="searchInput"
+          value={searchTerm}
+          onInputChange={onSearchInput}
+          isFocused
+        >
+          <strong>Search:</strong>
+        </InputWithLabel>
+        <button 
+          type='submit'
+          id='searchBtn' 
+          disabled={!searchTerm}
+          >
+            검색
+        </button>
+      </form>
+  )
+}
+
 const InputWithLabel = ({
   id,
   value,
   type = 'text',
   onInputChange,
-  handleClick,
   isFocused,
   children,
 }) => {
@@ -160,7 +175,6 @@ const InputWithLabel = ({
         type={type}
         value={value}
         onChange={onInputChange}
-        onClick={handleClick}
       />
     </>
   );
