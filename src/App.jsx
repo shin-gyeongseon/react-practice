@@ -56,11 +56,13 @@ const App = () => {
     { data: [], isLoading: false, isError: false }
   );
 
-  React.useEffect(() => {
+  const fetchHackNews = React.useCallback(() => {
+    if (!searchTerm) return;
+    const hackerApiUrl = `http://hn.algolia.com/api/v1/search?query=`;
+
     dispatchStories({ type: 'STORIES_FETCH_INIT' });
 
-    const hackerApiUrl = `http://hn.algolia.com/api/v1/search?query=`;
-    fetch(`${hackerApiUrl}react`)
+    fetch(`${hackerApiUrl}${searchTerm}`)
       .then(response => response.json())
       .then(result => {
         dispatchStories({
@@ -71,7 +73,11 @@ const App = () => {
       .catch(() => {
         dispatchStories({type: "STORIES_FETCH_FAILURE"})
       });
-  }, []);
+  }, [searchTerm]);
+
+  React.useEffect(() => {
+    fetchHackNews(searchTerm)
+  }, [searchTerm])
 
   const handleRemoveStory = (item) => {
     dispatchStories({
@@ -83,10 +89,6 @@ const App = () => {
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
-
-  const searchedStories = stories.data.filter((story) =>
-    story.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div>
@@ -109,7 +111,7 @@ const App = () => {
         <p>Loading ...</p>
       ) : (
         <List
-          list={searchedStories}
+          list={stories.data}
           onRemoveItem={handleRemoveStory}
         />
       )}
