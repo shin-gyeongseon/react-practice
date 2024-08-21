@@ -18,12 +18,12 @@ Currently, two official plugins are available:
 - 블로그, 아니면 기술 설명하는 페이지 만들어보는게 최종 목표
 
 # 일정 
-- [~240810] Fundamentals of React
-- [~240810] A Roadmap for React
-- [~240810] React's Legacy
-- [~240811] Styling in React
-- [~240816] React Maintenance
-- [~240818] Real World React(Advanced)
-- [~240818] Deploying a React Application 
+- [~240820] Fundamentals of React
+- [~240821] A Roadmap for React
+- [~240821] React's Legacy
+- [~240822] Styling in React
+- [~240823] React Maintenance
+- [~240824] Real World React(Advanced)
+- [~240824] Deploying a React Application 
 
 이후 혼자서 연습할 프로젝트 기획, 설계 시작
