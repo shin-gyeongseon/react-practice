@@ -1,6 +1,8 @@
 import * as React from 'react';
 import axios from 'axios';
 
+import './App.css';
+
 const storiesReducer = (state, action) => {
   switch (action.type) {
     case 'STORIES_FETCH_INIT':
@@ -99,8 +101,8 @@ const App = () => {
   }
 
   return (
-    <div>
-      <h1>My Hacker Stories</h1>
+    <div className='container'>
+      <h1 className='headline-primary'>My Hacker Stories</h1>
       <SearchForm
         searchTerm={searchTerm}
         onSearchInput={handleSearch}
@@ -193,8 +195,8 @@ const List = ({ list, onRemoveItem }) => (
 );
 
 const Item = ({ item, onRemoveItem }) => (
-  <li>
-    <span>
+  <li className='item'>
+    <span style={{width: '40%'}}>
       <a href={item.url}>{item.title}</a>
     </span>
     <span>{item.author}</span>
